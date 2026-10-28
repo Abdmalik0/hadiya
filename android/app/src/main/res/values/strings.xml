@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Halaba City FC</string>
+    <string name="title_activity_main">Halaba City FC</string>
+    <string name="package_name">com.halabacityfc.app</string>
+    <string name="custom_url_scheme">com.halabacityfc.app</string>
+</resources>

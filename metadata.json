@@ -1,0 +1,8 @@
+{
+  "name": "Hadiya Hossana FC - Official Club Portal",
+  "description": "Official portal of Hadiya Hossana Football Club (The Tigers / ነብሮቹ). Ethiopian Premier League fixtures, live standings, squad roster, stadium news, and digital fan memberships.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

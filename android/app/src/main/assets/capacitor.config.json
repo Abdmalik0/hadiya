@@ -1,0 +1,12 @@
+{
+	"appId": "com.halabacityfc.app",
+	"appName": "Halaba City FC",
+	"webDir": "dist",
+	"server": {
+		"androidScheme": "https",
+		"cleartext": true
+	},
+	"android": {
+		"allowMixedContent": true
+	}
+}

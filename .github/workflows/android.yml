@@ -1,0 +1,87 @@
+name: Build Android APK
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: "android-build"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: ''
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build web app
+        run: npm run build
+
+      - name: Sync Capacitor Android
+        run: npx cap sync android
+
+      - name: Make Gradle executable
+        run: chmod +x android/gradlew
+
+      - name: Build Debug APK
+        run: |
+          cd android
+          ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Prepare APK Output
+        run: |
+          mkdir -p build-output
+          cp android/app/build/outputs/apk/debug/app-debug.apk build-output/HalabaCityFC-v1.0-debug.apk
+          echo "APK successfully built:"
+          ls -lh build-output/HalabaCityFC-v1.0-debug.apk
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: HalabaCityFC-Android-APK
+          path: build-output/HalabaCityFC-v1.0-debug.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish to GitHub Releases
+        if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build-output/HalabaCityFC-v1.0-debug.apk
+          tag_name: ${{ github.ref_name || 'v1.0.0' }}
+          name: Halaba City FC Official Android App
+          body: |
+            ### 🌶️ Halaba City FC Official Android App (.apk)
+            
+            Download and install the official Halaba City FC application on your Android phone:
+            - **File**: `HalabaCityFC-v1.0-debug.apk`
+            - Built automatically by GitHub Actions without Android Studio.
+            - Includes live EPL match center, official shop, membership portal, and offline support.
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
